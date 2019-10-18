@@ -64,16 +64,12 @@ class Sensor():
                     self.samples += floor((self.event_duration - self.delay) * self.max_freq)
                     self.delay_handled = True
                     self.samples += floor((timestep - self.event_duration) * self.frequency)
-                    print(self.event_duration)
-                    print('aa')
 
                 else:
                     # Max frequency samples
                     self.samples += floor(self.event_duration * self.max_freq)
                     # Base frequency samples
                     self.samples += floor((timestep - self.event_duration) * self.frequency)
-                    print(self.event_duration)
-                    print('bb')
 
                 self.event = False
                 self.delay_handled = False
@@ -83,16 +79,12 @@ class Sensor():
             else:
                 # The delay has NOT handled already
                 if not self.delay_handled:
-                    print(self.event_duration)
-                    print('cc')
                     self.samples += floor((timestep - self.delay) * self.max_freq)
                     # self.event_duration -= self.delay
                     self.event_duration -= timestep
                     self.delay_handled = True
                 # The delay has handled already
                 else:
-                    print(self.event_duration)
-                    print('dd')
                     self.samples += floor(timestep * self.max_freq)
                     self.event_duration -= timestep
 
@@ -125,7 +117,6 @@ if __name__ == '__main__':
     for s in range(0, 4):
         if s == 1:
             s1.register_event(0.5)
-            print('event')
         s1.step()
         # s2.step()
 
