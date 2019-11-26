@@ -26,5 +26,18 @@ ID:1 samples: 29 sent bytes: 23808
 ID:1 samples: 2 sent bytes: 25344
 ID:1 samples: 2 sent bytes: 26880
 
+OK!
 
+Edge AI scenario
+f_b = 2
+f_m = 8
+delay = 100 ms
+
+event = 1.5 sec at t=2
+ID:1 samples: 2 sent bytes: 2
+ID:1 samples: 2 sent bytes: 4
+ID:1 samples: 7 sent bytes: 11
+ID:1 samples: 5 sent bytes: 16
+
+OK!
 
