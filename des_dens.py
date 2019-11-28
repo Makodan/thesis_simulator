@@ -12,7 +12,9 @@ timestep = 1  # s
 # Delay due to processing and sending, receiving
 noai_delay = (0.428805555555556 + 0.006166666666667 + 10.450 / 1000)
 cai_delay = (0.428805555555556 + 0.006166666666667 + 10.450 / 1000)
-eai_delay = (30 / 1000) + (111.78 / 1000) + (10.45 / 1000)
+eai_delay = (0.428805555555556 + 0.1117801683816651) + (10.45 / 1000)
+# eai_delay_send = (0.428805555555556 + 0.006166666666667 + 0.1117801683816651) + (10.45 / 1000)
+# eai_delay = (30 / 1000) + (111.78 / 1000) + (10.45 / 1000)
 
 # Maximal frequency in the given mode
 noai_freq = 2
@@ -50,7 +52,7 @@ class Sensor():
             self.packet_size = cai_packet
             self.cps = cai_cps
             self.accuracy = 0.85
-            self.completeness = 0.5
+            self.completeness = 0
             self.fmax = cai_fmax
             self.fmin = cai_fmin
         if ai_mode == 1:
@@ -67,7 +69,7 @@ class Sensor():
             # self.max_freq = eai_freq
             self.packet_size = eai_packet
             self.cps = eai_cps
-            self.accuracy = 0.6
+            self.accuracy = 0.7
             self.completeness = 0.5
             self.fmax = eai_fmax
             self.fmin = eai_fmin
@@ -89,7 +91,8 @@ class Sensor():
         self.actual_power = 0
         self.actual_quality = 0
 
-
+    # def calculate_delay(self):
+    #     sel
 
     def step(self):
         # If there is new event process it, calculate with higher freqs,
@@ -99,6 +102,7 @@ class Sensor():
             if self.event_duration <= timestep:
                 if not self.delay_handled:
                     self.actual_frequency = self.fmax
+                    # self.samples += floor((self.event_duration - self.delay) * self.actual_frequency)
                     self.samples += floor((self.event_duration - self.delay) * self.actual_frequency)
                     self.delay_handled = True
                     self.samples += floor((timestep - self.event_duration) * self.actual_frequency)
@@ -139,8 +143,10 @@ class Sensor():
         # Edge AI needs another method to calculate,if there is event
         self.actual_bandwidth = self.actual_frequency * self.packet_size
         self.actual_power = self.actual_frequency * self.cps
-        self.actual_quality = ((1 - self.delay * self.actual_frequency) + self.accuracy + (
-                self.actual_frequency / self.fmax) + self.completeness) / 4
+        # self.actual_quality = ((1 - self.delay * self.actual_frequency) + self.accuracy + (
+        #         self.actual_frequency / self.fmax) + self.completeness) / 4
+        self.actual_quality = (self.accuracy + (
+                self.actual_frequency / self.fmax) + self.completeness) / 3
         if self.ai_mode == 2 and self.event:
             self.actual_bandwidth = self.actual_frequency * noai_packet
             self.actual_power = self.actual_frequency * eai_cps_send
@@ -170,17 +176,14 @@ if __name__ == '__main__':
     sensor_list = list()
     simulation_length = 3600  # sec
 
-    population_step = 1000
-    population_max = 10000  # number
+    population_step = 10
+    population_max = 100 # number
     event_min = 2
     event_max = 120
-    ai = 2
-    freq =0.25
     color_list = ("red", "green", "grey")
     # ai_mode  0 - centralized AI, 1 - no AI, 2 - edge AI
     label_list = ("CAI", "NoAI", "EAI")
     for ai_v in range(0,3,1):
-
         consumption_list = list()
         bytes_list = list()
         delay_list = list()
@@ -208,7 +211,6 @@ if __name__ == '__main__':
                 event_list.append(0)
 
         plt.figure('Graphs')
-
         plt.subplot(611)
         plt.ylabel('Event')
         plt.plot(event_list, color="blue")
@@ -228,73 +230,79 @@ if __name__ == '__main__':
         plt.ylabel('Quality')
         plt.plot(actual_quality_list, color=color_list[ai_v], label=label_list[ai_v])
         plt.legend(loc="upper left")
-        # plt.figure('Event')
-        # plt.plot(event_list)
-        # plt.figure('Power')
-        # line = plt.plot(actual_power_list)
-        # plt.legend((line,),(str(ai_v),))
-        # plt.figure('Consumption')
-        # plt.plot(consumption_list)
-        # plt.figure('Frequency')
-        # plt.plot(actual_frequency_list)
-        # plt.figure('Bandwith')
-        # plt.plot(actual_bandwidth_list)
-        # plt.figure('Quality')
-        # plt.plot(actual_quality_list)
     plt.show()
-
-    # for population in range(1, population_max, population_step):
-    #     start = time.time()
-    #     # Generate population
-    #     sensor_list = list()
-    #     for i in range(population):
-    #         sensor_list.append(Sensor(i, freq, ai))
-    #
-    #     # Step trough time
-    #     for t in range(0, simulation_length, timestep):
-    #         actual_bandwidth = 0
-    #         actual_power = 0
-    #         # Choose sensors
-    #         # chosen_ones = np.random.normal(population * 0.5, population * 0.05, random.randint(0, int(population/2))).astype(np.int)
-    #         chosen_ones = random.sample(range(population), int(0.2 * population))
-    #         for x in chosen_ones:
-    #             sensor_list[x].register_event(duration=random.randint(event_min, event_max))
+    # for ai_v in range(0,3,1):
+    #     consumption_list = list()
+    #     delay_list = list()
+    #     bytes_list = list()
+    #     quality_list = list()
+    #     actual_power_list = list()
+    #     actual_bandwidth_list = list()
+    #     population_list = list()
+    #     for population in range(10, population_max, population_step):
+    #         start = time.time()
+    #         population_list.append(population)
+    #         # Generate population
+    #         sensor_list = list()
+    #         for i in range(population):
+    #             sensor_list.append(Sensor(i, ai_v))
+    # 
+    #         # Step trough time
+    #         for t in range(0, simulation_length, timestep):
+    #             actual_bandwidth = 0
+    #             actual_power = 0
+    #             # Choose sensors
+    #             chosen_ones = random.sample(range(population), int(0.0 * population))
+    #             for x in chosen_ones:
+    #                 sensor_list[x].register_event(duration=random.randint(event_min, event_max))
+    #             for sens in sensor_list:
+    #                 sens.step()
+    # 
+    #         total_consumption = 0
+    #         total_bytes = 0
+    #         average_quality = 0
+    #         average_delay = 0
+    #         # TODO worst, best delay? 
+    # 
+    #         # Summarize
     #         for sens in sensor_list:
-    #             sens.step()
-    #             actual_bandwidth += sens.actual_bandwidth
-    #             actual_power += sens.actual_power
-    #         actual_bandwidth_list.append(actual_bandwidth)
-    #         actual_power_list.append(actual_power)
-    #
-    #     total_consumption = 0
-    #     total_bytes = 0
-    #
-    #     # Summarize
-    #     for sens in sensor_list:
-    #         total_consumption += sens.consumption
-    #         total_bytes += sens.sent_bytes
-    #
-    #     # Calculate delays
-    #     if sensor_list[0].ai_mode == 2:
-    #         delay_list.append(sensor_list[0].delay)
-    #
-    #     if sensor_list[0].ai_mode == 0:
-    #         delay_list.append(sensor_list[0].delay + len(sensor_list) * len(sensor_list) * 0.0407/1000)
-    #
-    #     consumption_list.append(total_consumption)
-    #     bytes_list.append(total_bytes)
-    #     print(
-    #         f"Population: {population}, Total consumption: {total_consumption} mWs, total bytes: {total_bytes},"
-    #         f" Time elapsed: {round((time.time() - start),1)}")
-    #
-    #     plt.figure('Power')
-    #     plt.plot(actual_power_list)
-    #     plt.figure('Bandwidth')
-    #     plt.plot(actual_bandwidth_list)
-    # plt.figure('Consumption')
-    # plt.plot(consumption_list)
-    # plt.figure('Bytes')
-    # plt.plot(bytes_list)
-    # plt.figure('Delay')
-    # plt.plot(delay_list)
-    # plt.show()
+    #             total_consumption += sens.consumption
+    #             total_bytes += sens.sent_bytes
+    #             average_quality += sens.actual_quality
+    # 
+    #         # Calculate delays
+    #         if sensor_list[0].ai_mode == 2:
+    #             delay_list.append(sensor_list[0].delay)
+    # 
+    #         if sensor_list[0].ai_mode == 0:
+    #             delay_list.append(sensor_list[0].delay + len(sensor_list) * len(sensor_list) * 0.0407/1000)
+    # 
+    #         consumption_list.append(total_consumption)
+    #         bytes_list.append(total_bytes)
+    #         quality_list.append(average_quality/population)
+    #         print(
+    #             f"Population: {population}, Total consumption: {total_consumption} mWs, total bytes: {total_bytes},"
+    #             f" Time elapsed: {round((time.time() - start),1)}")
+    # 
+    #     plt.figure('Graphs')
+    #     plt.subplot(311)
+    #     plt.ylabel('Consumption')
+    #     plt.plot(population_list, consumption_list,  color=color_list[ai_v], label=label_list[ai_v])
+    #     plt.subplot(312)
+    #     plt.ylabel('Average quality')
+    #     plt.plot(population_list, quality_list, color=color_list[ai_v], label=label_list[ai_v])
+    #     # plt.subplot(613)
+    #     # plt.ylabel('Power')
+    #     # plt.plot(consumption_list, color=color_list[ai_v], label=label_list[ai_v])
+    #     # plt.subplot(614)
+    #     # plt.ylabel('Delay')
+    #     # plt.plot(delay_list, color=color_list[ai_v], label=label_list[ai_v])
+    #     # plt.subplot(615)
+    #     # plt.ylabel('Bandwidth')
+    #     # plt.plot(actual_bandwidth_list, color=color_list[ai_v], label=label_list[ai_v])
+    #     plt.subplot(313)
+    #     plt.ylabel('Sum bandwidth')
+    #     plt.plot(population_list, bytes_list, color=color_list[ai_v], label=label_list[ai_v])
+    #     plt.legend(loc="upper left")
+
+    plt.show()
