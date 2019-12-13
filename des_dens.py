@@ -229,7 +229,7 @@ if __name__ == '__main__':
 
     population_start = 1000
     population_step = 1000
-    population_max = 12000  # number
+    population_max = 12000 # number
     population_range = range(population_start, population_max, population_step)
     print(len(population_range))
     probability_start = 0
@@ -377,11 +377,11 @@ if __name__ == '__main__':
                     has_event = 0
                     no_event = 0
                     # Choose sensors
-                    if t % 2:
+                    if t % 30 == 0:
                         chosen_ones = random.sample(range(population), int(probability / 100 * population))
                         for x in chosen_ones:
                             # sensor_list[x].register_event(duration=random.randint(event_min, event_max))
-                            sensor_list[x].register_event(duration=3)
+                            sensor_list[x].register_event(duration=30)
                     for sens in sensor_list:
                         if sens.event:
                             has_event += 1
@@ -389,7 +389,7 @@ if __name__ == '__main__':
                             no_event += 1
                     for sens in sensor_list:
                         sens.step()
-                    # if probability > 90:
+                    # if probability > 0:
                     #     print(f"Probability: {probability}, Event percentage: {(has_event / (has_event + no_event)) * 100}")
 
                 total_consumption = 0
@@ -541,11 +541,11 @@ if __name__ == '__main__':
 #             # Step trough time
 #             for t in range(0, simulation_length, timestep):
 #                 # Choose sensors
-#                 if t % 2:
+#                 if t % 2 == 30:
 #                     chosen_ones = random.sample(range(population), int(probability / 100 * population))
 #                     for x in chosen_ones:
 #                         # sensor_list[x].register_event(duration=random.randint(event_min, event_max))
-#                         sensor_list[x].register_event(duration=20)
+#                         sensor_list[x].register_event(duration=30)
 #                 # chosen_ones = random.sample(range(population), int(probability / 100 * population))
 #                 # for x in chosen_ones:
 #                 #     sensor_list[x].register_event(duration=random.randint(event_min, event_max))
@@ -558,16 +558,17 @@ if __name__ == '__main__':
 #             average_delay = 0
 #             average_bandwidth = 0
 #             average_FLOPS = 0
-#             max_FLOPS = 0
+#             sum_flops = 0
 #             # TODO worst, best delay?
 #
 #             # Summarize
+#
 #             for sens in sensor_list:
 #                 total_consumption += sens.consumption
 #                 total_bytes += sens.sent_bytes
 #                 average_quality += sens.calculate_average_quality()
 #                 average_bandwidth += sens.actual_bandwidth
-#                 average_FLOPS += sens.sum_flops
+#                 sum_flops += sens.sum_flops
 #
 #             # Calculate delays
 #             if sensor_list[0].ai_mode == 2:
@@ -576,13 +577,13 @@ if __name__ == '__main__':
 #             if sensor_list[0].ai_mode == 0:
 #                 delay_list.append(sensor_list[0].delay + len(sensor_list) * len(sensor_list) * 0.0407 / 1000)
 #
-#             consumption_list.append(total_consumption / (1000))
+#             consumption_list.append(total_consumption/3600)
 #             bytes_list.append(total_bytes)
 #             quality_list.append((average_quality / population) * 100)
-#             actual_bandwidth_list.append(average_bandwidth / population)
+#             actual_bandwidth_list.append(average_bandwidth)
 #             actual_FLOPS_list.append(average_FLOPS / population)
-#             sum_FLOPS_list.append(average_FLOPS
-#                                   )
+#             sum_FLOPS_list.append(sum_flops)
+#
 #             print(
 #                 f"Probability: {probability} Population: {population}, Total consumption: {total_consumption} mWs, total bytes: {total_bytes},"
 #                 f" Time elapsed: {round((time.time() - start), 1)}")
