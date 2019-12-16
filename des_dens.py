@@ -241,7 +241,7 @@ if __name__ == '__main__':
     event_max = 6
     event_mean = 5
     event_std = 1
-    color_list = ("red", "green", "grey")
+    color_list = ("red", "blue", "green")
     # ai_mode  0 - centralized AI, 1 - no AI, 2 - edge AI
     label_list = ("CAI", "NoAI", "EAI")
 
@@ -277,70 +277,70 @@ if __name__ == '__main__':
         np.zeros((len(probability_range), len(population_range)), dtype=np.float),
         np.zeros((len(probability_range), len(population_range)), dtype=np.float)]
 
-    # for ai_v in range(0, 3, 1):
-    #     consumption_list = list()
-    #     bytes_list = list()
-    #     delay_list = list()
-    #     actual_frequency_list = list()
-    #     actual_power_list = list()
-    #     actual_bandwidth_list = list()
-    #     actual_quality_list = list()
-    #     actual_FLOPS_list = list()
-    #     event_list = list()
-    #     # Test with 1 sensor
-    #     s1 = Sensor(1, ai_v)
-    #     for t in range(0, simulation_length, timestep):
-    #         s1.step()
-    #         actual_power_list.append(s1.actual_power)
-    #         actual_bandwidth_list.append(s1.actual_bandwidth)
-    #         actual_frequency_list.append(s1.actual_frequency)
-    #         actual_quality_list.append(s1.actual_quality * 100)
-    #         actual_FLOPS_list.append(s1.actual_FLOPS)
-    #         consumption_list.append(s1.consumption)
-    #         if t == 800:
-    #             s1.register_event(120)
-    #         if t == 1700:
-    #             s1.register_event(700)
-    #         if (t >= 800 and t < 920) or (1700 <= t < 2400):
-    #             event_list.append(1)
-    #         else:
-    #             event_list.append(0)
-    #
-    #     plt.figure('Graphs', figsize=(15, 15))
-    #     a1 = plt.subplot(711)
-    #     a1.set_xticklabels([])
-    #     plt.ylabel('Event')
-    #     plt.plot(event_list, color="blue")
-    #     a2 = plt.subplot(712)
-    #     a2.set_xticklabels([])
-    #     plt.ylabel('Power\n[W]')
-    #     line = plt.plot(actual_power_list, color=color_list[ai_v], label=label_list[ai_v])
-    #     plt.legend(loc="upper left")
-    #     a3 = plt.subplot(713)
-    #     a3.set_xticklabels([])
-    #     plt.ylabel('Consumption\n[mWs]')
-    #     plt.plot(consumption_list, color=color_list[ai_v], label=label_list[ai_v])
-    #     a4 = plt.subplot(714)
-    #     a4.set_xticklabels([])
-    #     plt.ylabel('Frequency\n[Hz]')
-    #     plt.plot(actual_frequency_list, color=color_list[ai_v], label=label_list[ai_v])
-    #     a5 = plt.subplot(715)
-    #     a5.set_xticklabels([])
-    #     plt.ylabel('Bandwidth\n[B/s]')
-    #     plt.plot(actual_bandwidth_list, color=color_list[ai_v], label=label_list[ai_v])
-    #     a6 = plt.subplot(716)
-    #     a6.set_xticklabels([])
-    #     plt.ylabel('Quality\n[%]')
-    #     plt.plot(actual_quality_list, color=color_list[ai_v], label=label_list[ai_v])
-    #     a7 = plt.subplot(717)
-    #     a7.get_shared_x_axes().join(a1, a2, a3, a4, a5, a6)
-    #     plt.ylabel('FLOP')
-    #     plt.plot(actual_FLOPS_list, color=color_list[ai_v], label=label_list[ai_v])
-    #     plt.xlabel('Time [s]')
-    #
+    for ai_v in range(0, 3, 1):
+        consumption_list = list()
+        bytes_list = list()
+        delay_list = list()
+        actual_frequency_list = list()
+        actual_power_list = list()
+        actual_bandwidth_list = list()
+        actual_quality_list = list()
+        actual_FLOPS_list = list()
+        event_list = list()
+        # Test with 1 sensor
+        s1 = Sensor(1, ai_v)
+        for t in range(0, simulation_length, timestep):
+            s1.step()
+            actual_power_list.append(s1.actual_power)
+            actual_bandwidth_list.append(s1.actual_bandwidth)
+            actual_frequency_list.append(s1.actual_frequency)
+            actual_quality_list.append(s1.actual_quality * 100)
+            actual_FLOPS_list.append(s1.actual_FLOPS)
+            consumption_list.append(s1.consumption)
+            if t == 200:
+                s1.register_event(60)
+            if t == 400:
+                s1.register_event(120)
+            if (t >= 200 and t < 260) or (400 <= t < 520):
+                event_list.append(1)
+            else:
+                event_list.append(0)
+
+        plt.figure('Graphs', figsize=(15, 15))
+        a1 = plt.subplot(711)
+        a1.set_xticklabels([])
+        plt.ylabel('Event')
+        plt.plot(event_list, color="grey")
+        a2 = plt.subplot(712)
+        a2.set_xticklabels([])
+        plt.ylabel('Power\n[W]')
+        line = plt.plot(actual_power_list, color=color_list[ai_v], label=label_list[ai_v])
+        plt.legend(loc="upper right")
+        a3 = plt.subplot(713)
+        a3.set_xticklabels([])
+        plt.ylabel('Consumption\n[Ws]')
+        plt.plot(consumption_list, color=color_list[ai_v], label=label_list[ai_v])
+        a4 = plt.subplot(714)
+        a4.set_xticklabels([])
+        plt.ylabel('Frequency\n[Hz]')
+        plt.plot(actual_frequency_list, color=color_list[ai_v], label=label_list[ai_v])
+        a5 = plt.subplot(715)
+        a5.set_xticklabels([])
+        plt.ylabel('Bandwidth\n[B/s]')
+        plt.plot(actual_bandwidth_list, color=color_list[ai_v], label=label_list[ai_v])
+        a6 = plt.subplot(716)
+        a6.set_xticklabels([])
+        plt.ylabel('Quality\n[%]')
+        plt.plot(actual_quality_list, color=color_list[ai_v], label=label_list[ai_v])
+        a7 = plt.subplot(717)
+        a7.get_shared_x_axes().join(a1, a2, a3, a4, a5, a6)
+        plt.ylabel('FLOP')
+        plt.plot(actual_FLOPS_list, color=color_list[ai_v], label=label_list[ai_v])
+        plt.xlabel('Time [s]')
+
     # plt.show()
-    # plt.savefig("Graphs.png", bbox_inches='tight')
-    # exit()
+    plt.savefig("Graphs.png", bbox_inches='tight')
+    exit()
 
     for ai_v in range(0, 3, 1):
         print(f"{label_list[ai_v]} simulation started")
